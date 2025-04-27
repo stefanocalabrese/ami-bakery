@@ -127,12 +127,13 @@ variable "insecure_ssl" {
 
 variable "kms_arn" {
   type        = string
-  description = "AWS KMS customer master key (CMK) to be used for encrypting the build project's build output artifacts."
+  default     = ""
+  description = "AWS KMS customer master key (CMK) to be used for encrypting the build project's build output artifacts. Defaults to empty (No encryption)"
 }
 
 variable "location" {
   type        = string
-  description = "URL of the repository: https://github.com/n26/REPOSITORY_NAME.git"
+  description = "URL of the repository: https://github.com/username/REPOSITORY_NAME.git"
 }
 
 variable "private_subnets_ids" {
