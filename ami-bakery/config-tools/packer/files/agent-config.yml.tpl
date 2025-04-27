@@ -18,7 +18,7 @@ config:
 
       - task: setAdminAccount
         inputs:
-          name: N26Admin
+          name: Admin
           password:
             type: random
           expire: true

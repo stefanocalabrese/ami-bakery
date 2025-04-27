@@ -328,17 +328,7 @@ source "amazon-ebs" "codebuild" {
 build {
  sources = ["source.amazon-ebs.codebuild"]
 
- # Install N26 Public Certificates
- provisioner "ansible" {
-   timeout           = "20m"
-   ssh_host_key_file = "/home/ubuntu/${var.ssh_key_name}.pem"
-   use_proxy         = false
-   inventory_file    = "/home/ubuntu/ansible/inventories/aws_ec2.yaml"
-   playbook_file     = "/home/ubuntu/ansible/playbooks/n26-public-certificates.yaml"
-   ansible_env_vars  = ["ANSIBLE_CONFIG=/etc/ansible/ansible.cfg"]
- }
-
- # Enabling TLS 1.2 and 1.3
+# Enabling TLS 1.2 and 1.3
  provisioner "ansible" {
    timeout           = "20m"
    ssh_host_key_file = "/home/ubuntu/${var.ssh_key_name}.pem"

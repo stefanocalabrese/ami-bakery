@@ -15,7 +15,7 @@
     
     - name: Decompress the baseline ZIP file
       win_unzip:
-        src: C:\temp-gpo\n26_sec_baseline_ws2022.zip
+        src: C:\temp-gpo\sec_baseline_ws2022.zip
         dest: C:\temp-gpo
         remote_src: yes
 

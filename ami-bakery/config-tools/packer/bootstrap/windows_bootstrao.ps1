@@ -98,7 +98,7 @@ Set-ItemProperty -Path $registryPath -Name $propertyName -Value $propertyValue
 
 Stop-Transcript
 
-C:\'Program Files'\Amazon\AWSCLIV2\aws.exe s3 cp "C:\Logs\bootstrap-$timestamp.log" s3://n26-ops26-dev-fra-bootstrap/ansible/logs/ec2_codebuild-$timestamp.log
+C:\'Program Files'\Amazon\AWSCLIV2\aws.exe s3 cp "C:\Logs\bootstrap-$timestamp.log" s3://bakery-store/logs/ec2_codebuild-$timestamp.log
 Remove-Item -Path "C:\Logs" -Recurse -Force
 
 </powershell>
