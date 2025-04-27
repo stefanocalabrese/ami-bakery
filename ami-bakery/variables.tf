@@ -33,6 +33,5 @@ variable "sns" {
 variable "github_token" {
   description = "Sensitive token for Github"
   type        = string
-  default     = "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"
   sensitive   = true
 }
