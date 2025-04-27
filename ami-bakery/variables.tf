@@ -22,16 +22,16 @@ variable "environment" {
   description = "The environment where we are deploying to"
 }
 
+variable "github_token" {
+  description = "Sensitive token for Github"
+  type        = string
+  sensitive   = true
+}
+
 variable "sns" {
   type = map(any)
   default = {
     name         = "ami-bakery-notifications"
     display_name = "ami-bakery-notifications"
   }
-}
-
-variable "github_token" {
-  description = "Sensitive token for Github"
-  type        = string
-  sensitive   = true
 }
