@@ -14,7 +14,7 @@ locals {
   codebuild_container_image        = "aws/codebuild/standard:7.0" # Ubuntu 22.04 LTS runner        - Ref. https://docs.aws.amazon.com/codebuild/latest/userguide/ec2-compute-images.html 
   codebuild_container_compute_type = "BUILD_GENERAL1_SMALL"       # 2 vCPU - 4 GiB - 64 GB storage - Ref. https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html 
 
-  subnets_suffix = "default"
+  subnets_suffix = "default" # In my case my subnets have tag names "default-a". "default-b" and "default-c". Change to your convenience.
 
   # SNS Notification email list
   emails = [
