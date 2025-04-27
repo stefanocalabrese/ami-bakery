@@ -1,13 +1,13 @@
 variable "aws_access_key_id" {
   type        = string
   default     = "" # Will default to env variable
-  description = "AWS Access Key ID, it is assumed it is exported in your host env vars"
+  description = "AWS Access Key ID"
 }
 
 variable "aws_secret_access_key" {
   type        = string
   default     = "" # Will default to env variable
-  description = "AWS Secret Access Key, it is assumed it is exported in your host env vars"
+  description = "AWS Secret Access Key"
 }
 
 variable "region" {
