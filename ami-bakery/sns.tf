@@ -1,6 +1,6 @@
 # SNS topic and subscription
 resource "aws_sns_topic" "notification_email_topic" {
-  name                           = "send-email-for-infra-notifications"
+  name                           = "send-email-for-ami-bakery-notifications"
   http_success_feedback_role_arn = aws_iam_role.sns_role.arn
   http_failure_feedback_role_arn = aws_iam_role.sns_role.arn
 
