@@ -34,7 +34,9 @@ resource "aws_ssm_parameter" "sshd_config" {
   description = "sshd_config file for the CodeBuild container"
   value = templatefile(
     "${path.module}/config-tools/ansible/sshd_config",
-    {}
+    {
+      SSH_KEY_NAME = local.project_name
+    }
   )
 }
 
