@@ -1,0 +1,104 @@
+version: 0.2
+env:
+ variables:
+   PACKER_VERSION: '1.11.0' # Latest available
+
+phases:
+ install:
+   runtime-versions:
+     python: 3.12
+   commands:
+     - echo "Installing necessary packages"
+     - pip install jmespath argparse
+     - pip install botocore boto3
+     - pip install "pywinrm[credssp]"
+     - echo "Installing ansible"
+     - pip install ansible
+     - echo "Installing HashiCorp Packer version=${PACKER_VERSION}..."
+     - PACKER_ZIP="packer_${PACKER_VERSION}_linux_amd64.zip"
+     - PACKER_RELEASE_URL="https://releases.hashicorp.com/packer"
+     - PACKER_ZIP_URL="${PACKER_RELEASE_URL}/$PACKER_VERSION/${PACKER_ZIP}"
+     - curl -qL -o packer.zip "${PACKER_ZIP_URL}"
+     - unzip -d /usr/local/bin/ packer.zip
+
+ pre_build:
+   commands:
+     # Creating directories needed
+     - echo "Creating directories needed"
+     - mkdir -p /etc/ansible
+     - mkdir -p /home/ubuntu/.ssh
+     - mkdir -p /home/ubuntu/ansible/playbooks
+     - mkdir -p /home/ubuntu/ansible/inventories
+     - mkdir -p /home/ubuntu/ansible/inventories/group_vars
+     - mkdir -p /home/ubuntu/ansible/scripts
+     - mkdir -p /home/ubuntu/ansible/logs
+
+     # Creating the temporary SSH Key to connect to the temporary instance
+     - echo "Creating SSH Key to connect to the temporary instance, checking if the key pair is existing, and pushing the public key in Parameter Store"
+     - |
+       # Check if the SSH key already exists
+       if aws ec2 describe-key-pairs --key-names "${SSH_KEY_NAME}" --query "KeyPairs[0].KeyName" --output text 2>/dev/null; then
+         echo "SSH key ${SSH_KEY_NAME} already exists. Deleting it..."
+         aws ec2 delete-key-pair --key-name "${SSH_KEY_NAME}"
+       fi
+
+       echo "Creating SSH key ${SSH_KEY_NAME}..."
+       aws ec2 create-key-pair --key-name "${SSH_KEY_NAME}" --query "KeyMaterial" --output text > /home/ubuntu/${SSH_KEY_NAME}.pem
+
+     - aws s3 cp /home/ubuntu/${SSH_KEY_NAME}.pem s3://bakery-store/sshkeys/${SSH_KEY_NAME}.pem
+     - openssl rsa -in /home/ubuntu/${SSH_KEY_NAME}.pem -pubout -out /home/ubuntu/${SSH_KEY_NAME}.pub
+     - ssh-keygen -f /home/ubuntu/${SSH_KEY_NAME}.pub -i -m PKCS8 > /home/ubuntu/${SSH_KEY_NAME}_rsa.pub
+     - PUB_KEY=$(cat /home/ubuntu/${SSH_KEY_NAME}_rsa.pub)
+     - aws ssm put-parameter --name "/packer/sshkey" --value "$PUB_KEY" --type "String" --region "eu-central-1" --overwrite
+     - chmod 400 /home/ubuntu/${SSH_KEY_NAME}.pem
+
+     # Downloading configuration files and playbooks from Parameter Store
+     - echo "Downloading configuration files and playbooks from Parameter Store"
+     - PARAMETERS=$(aws ssm get-parameters-by-path --path "/ansible_windows/cis/" --recursive --query 'Parameters[*].{Name:Name}' --output text)
+     - TOTAL=$(echo "$PARAMETERS" | wc -w)
+     - echo "Found $TOTAL playbooks in Parameter Store"
+     - COUNT=1
+     - for PARAMETER in $PARAMETERS; do
+       PLAYBOOK_NAME=$(basename "$PARAMETER");
+       aws ssm get-parameter --name "$PARAMETER" --query 'Parameter.Value' --output text > /home/ubuntu/ansible/playbooks/$PLAYBOOK_NAME;
+       echo "[$COUNT/$TOTAL] Downloaded $PLAYBOOK_NAME";
+       COUNT=$((COUNT + 1));
+       done
+     - aws ssm get-parameter --region eu-central-1 --name /packer/ansible_windows/apply-sec-baseline.yaml --with-decryption --query Parameter.Value --output text > /home/ubuntu/ansible/playbooks/apply-sec-baseline.yaml
+     - aws ssm get-parameter --region eu-central-1 --name /packer/ansible/sshd_config --with-decryption --query Parameter.Value --output text > /home/ubuntu/.ssh/config
+     - aws ssm get-parameter --region eu-central-1 --name /packer/ansible_windows/ansible.cfg --with-decryption --query Parameter.Value --output text > /etc/ansible/ansible.cfg
+     - aws ssm get-parameter --region eu-central-1 --name /packer/ansible_windows/aws_ec2.yaml --with-decryption --query Parameter.Value --output text > /home/ubuntu/ansible/inventories/aws_ec2.yaml
+     - aws ssm get-parameter --region eu-central-1 --name /packer/ansible_windows/windows_packer.yaml --with-decryption --query Parameter.Value --output text > /home/ubuntu/ansible/inventories/group_vars/windows_packer.yaml
+
+     # Validate the Packer template
+     - echo "Packer Validate..."
+     - cd ${CODEBUILD_SRC_DIR}/${COMPONENT_PACKER_DIR}
+     - packer init template.pkr.hcl
+     - packer validate -var-file=vars/${ENVIRONMENT}.pkrvars.hcl ./template.pkr.hcl
+
+ build:
+   commands:
+     # Please Read: The commented lines are for debugging purposes, please uncomment them if needed
+     - echo "Packer Build..."
+     # - export PACKER_LOG=1
+     - export PACKER_LOG_PATH="/var/log/packer.log"
+     - cd ${CODEBUILD_SRC_DIR}/${COMPONENT_PACKER_DIR}
+     - packer build -var-file=vars/${ENVIRONMENT}.pkrvars.hcl ./template.pkr.hcl  | tee packer_output.log; packer_exit=$(echo $?)
+     # - packer build -debug -var-file=vars/${ENVIRONMENT}.pkrvars.hcl ./template.pkr.hcl  | tee packer_output.log; packer_exit=$(echo $?) # Debug mode
+     - echo "Packer Build exit=${packer_exit} and codebuild exit=${CODEBUILD_BUILD_SUCCEEDING}"
+
+ post_build:
+   commands:
+     # Copy the logs to Ansible S3
+     - TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+     - aws s3 cp /home/ubuntu/ansible/logs/ansible.log s3://bakery-store/logs/ansible-$TIMESTAMP.log
+
+     # Delete the temporary SSH Key and clean up
+     - echo "Deleting the temporary SSH Key"
+     - aws ec2 delete-key-pair --key-name "${SSH_KEY_NAME}"
+     - aws s3 rm s3://bakery-store/sshkeys/${SSH_KEY_NAME}.pem
+     - aws ssm delete-parameter --name "/packer/sshkey"
+
+     # Get the AMI ID from the Packer log and send a notification to the SNS topic
+     - echo "Packer build completed on `date`"
+     - aws sns publish --topic-arn ${SNS_TOPIC_ARN} --message "The new AMI for the project ${SSH_KEY_NAME} has been backed and ready in the ${ENVIRONMENT} environment"
