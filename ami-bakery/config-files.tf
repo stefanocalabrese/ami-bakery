@@ -1,41 +1,41 @@
 resource "aws_ssm_parameter" "ansible_cfg_windows" {
- name        = "/packer/ansible_windows/ansible.cfg"
- type        = "String"
- description = "Ansible Config file for Windows"
- value = templatefile(
-   "${path.module}/ansible/windows/configs/ansible_windows.cfg",
-   {}
- )
+  name        = "/packer/ansible_windows/ansible.cfg"
+  type        = "String"
+  description = "Ansible Config file for Windows"
+  value = templatefile(
+    "${path.module}/ansible/windows/configs/ansible_windows.cfg",
+    {}
+  )
 }
 
 resource "aws_ssm_parameter" "aws_ec2_plugin_windows" {
- name        = "/packer/ansible_windows/aws_ec2.yaml"
- type        = "String"
- description = "Ansible plugin for dynamic inventory on ec2 tag for Windows"
- value = templatefile(
-   "${path.module}/ansible/windows/configs/aws_ec2.yaml",
-   {}
- )
+  name        = "/packer/ansible_windows/aws_ec2.yaml"
+  type        = "String"
+  description = "Ansible plugin for dynamic inventory on ec2 tag for Windows"
+  value = templatefile(
+    "${path.module}/ansible/windows/configs/aws_ec2.yaml",
+    {}
+  )
 }
 
 resource "aws_ssm_parameter" "openssl_config" {
- name        = "/ansible_windows/openssl.cnf"
- type        = "String"
- description = "Openssl Config file for Windows Certificate with Client Authentication"
- value = templatefile(
-   "${path.module}/ansible/windows/configs/openssl.cnf.tpl",
-   {}
- )
+  name        = "/ansible_windows/openssl.cnf"
+  type        = "String"
+  description = "Openssl Config file for Windows Certificate with Client Authentication"
+  value = templatefile(
+    "${path.module}/ansible/windows/configs/openssl.cnf.tpl",
+    {}
+  )
 }
 
 resource "aws_ssm_parameter" "ec2launch_agent_config" {
- name        = "/packer/ansible_windows/agent-config.yml"
- type        = "String"
- description = "EC2Launchv2 Agent Config file for Sysprep Windows"
- value = templatefile(
-   "${path.module}/config-tools/packer/files/agent-config.yml.tpl",
-   {}
- )
+  name        = "/packer/ansible_windows/agent-config.yml"
+  type        = "String"
+  description = "EC2Launchv2 Agent Config file for Sysprep Windows"
+  value = templatefile(
+    "${path.module}/config-tools/packer/files/agent-config.yml.tpl",
+    {}
+  )
 }
 
 # For reference, in case you want to store the unattend.xml in the parameter store.
@@ -79,5 +79,5 @@ resource "aws_s3_bucket_object" "lgpo" {
   bucket = aws_s3_bucket.bakery_store.id
   key    = "lgpo/lgpo.exe"
   source = "${path.module}/config-tools/packer/files/lgpo.exe"
-  etag   = filemd5("${path.module}/config-tools/packer/files/lgpo.exe)
+  etag   = filemd5("${path.module}/config-tools/packer/files/lgpo.exe")
 }

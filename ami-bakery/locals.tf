@@ -1,7 +1,7 @@
 locals {
   # >>>>>>> IMPORTANT!!! <<<<<< 
   # The "project_name" needs to be the same name of the project folder in the repository or the build will fail!!!
-  project_name    = "ami-bakery" 
+  project_name = "ami-bakery"
 
   repository_url  = "https://github.com/stefanocalabrese/ami-bakery.git" # Change this if you fork the repository to customize it
   build_name      = "windows-server-2022-golden-ami-${local.year_month_date}"
@@ -17,6 +17,6 @@ locals {
 
   # SNS Notification email list
   emails = [
-    stefano@my-amazing-mail.com,
+    "stefano@my-amazing-mail.com",
   ]
 }
