@@ -10,7 +10,7 @@
 | aws_secret_access_key | AWS Secret Access Key | `string` | `""` |
 | environment | The environment where we are deploying to | `string` | `"dev"` |
 | region | The AWS Region | `string` | `"eu-central-1"` |
-| sns | n/a | `map(any)` | <pre>{<br/>  "display_name": "packer-notifications",<br/>  "name": "packer-notifications"<br/>}</pre> |
+| sns | n/a | `map(any)` | <pre>{<br/>  "display_name": "ami-bakery-notifications",<br/>  "name": "ami-bakery-notifications"<br/>}</pre> |
 
 ## Modules
 

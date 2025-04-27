@@ -25,8 +25,8 @@ variable "environment" {
 variable "sns" {
   type = map(any)
   default = {
-    name         = "packer-notifications"
-    display_name = "packer-notifications"
+    name         = "ami-bakery-notifications"
+    display_name = "ami-bakery-notifications"
   }
 }
 
