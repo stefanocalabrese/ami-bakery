@@ -1,0 +1,61 @@
+- name: Configure Windows EC2 with GPO baseline
+  hosts: windows_packer
+  gather_facts: false
+  vars:
+    ansible_shell_type: powershell
+  tasks:
+    - name: Ensure temp-gpo folder exists
+      win_file:
+        path: C:\temp-gpo
+        state: directory
+    
+    - name: Sync S3 bucket content to the temp folder
+      win_command: |
+        aws s3 sync s3://bakery-store/lgpo/ C:\temp-gpo
+    
+    - name: Decompress the baseline ZIP file
+      win_unzip:
+        src: C:\temp-gpo\n26_sec_baseline_ws2022.zip
+        dest: C:\temp-gpo
+        remote_src: yes
+
+    - name: Ensure PolicyDefinitions folder exists
+      win_file:
+        path: C:\Windows\PolicyDefinitions
+        state: directory
+
+    - name: Ensure PolicyDefinitions\en-US folder exists
+      win_file:
+        path: C:\Windows\PolicyDefinitions\en-US
+        state: directory
+
+    - name: Copy .admx files to PolicyDefinitions
+      win_copy:
+        src: C:\temp-gpo
+        dest: C:\Windows\PolicyDefinitions
+        remote_src: yes
+        includes: "*.admx"
+
+    - name: Copy .adml files to PolicyDefinitions\en-US
+      win_copy:
+        src: C:\temp-gpo
+        dest: C:\Windows\PolicyDefinitions\en-US
+        remote_src: yes
+        includes: "*.adml"
+
+    - name: Apply the GPO baseline
+      win_shell: |
+        C:\temp-gpo\lgpo.exe /g C:\temp-gpo\
+
+    - name: Wait for 5 seconds
+      pause:
+        seconds: 5
+
+    - name: Remove temp-gpo folder
+      win_file:
+        path: C:\temp-gpo
+        state: absent
+
+    - name: Force a Group Policy update
+      win_command: |
+        gpupdate /force

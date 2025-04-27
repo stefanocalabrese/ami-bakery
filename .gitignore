@@ -40,3 +40,6 @@ terraform.rc
 
 # Ignore Terraform Docs yaml config file
 .terraform-docs.yaml
+
+# Paker variables
+*.pkvars.hcl

@@ -1,0 +1,10 @@
+plugin: aws_ec2
+
+regions:
+  - eu-central-1
+
+hostnames:
+  - private-ip-address
+
+groups:
+  windows_packer: "'windows-server-2022-ami' in tags.Name"

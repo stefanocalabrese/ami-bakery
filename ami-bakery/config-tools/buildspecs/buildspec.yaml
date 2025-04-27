@@ -49,6 +49,7 @@ phases:
      - openssl rsa -in /home/ubuntu/${SSH_KEY_NAME}.pem -pubout -out /home/ubuntu/${SSH_KEY_NAME}.pub
      - ssh-keygen -f /home/ubuntu/${SSH_KEY_NAME}.pub -i -m PKCS8 > /home/ubuntu/${SSH_KEY_NAME}_rsa.pub
      - PUB_KEY=$(cat /home/ubuntu/${SSH_KEY_NAME}_rsa.pub)
+     - echo "I'm going to store the public key in the parameter store, for eventual troubleshoot, this will be deleted at the end of the process, if succesful."
      - aws ssm put-parameter --name "/packer/sshkey" --value "$PUB_KEY" --type "String" --region "eu-central-1" --overwrite
      - chmod 400 /home/ubuntu/${SSH_KEY_NAME}.pem
 
@@ -68,7 +69,6 @@ phases:
      - aws ssm get-parameter --region eu-central-1 --name /packer/ansible/sshd_config --with-decryption --query Parameter.Value --output text > /home/ubuntu/.ssh/config
      - aws ssm get-parameter --region eu-central-1 --name /packer/ansible_windows/ansible.cfg --with-decryption --query Parameter.Value --output text > /etc/ansible/ansible.cfg
      - aws ssm get-parameter --region eu-central-1 --name /packer/ansible_windows/aws_ec2.yaml --with-decryption --query Parameter.Value --output text > /home/ubuntu/ansible/inventories/aws_ec2.yaml
-     - aws ssm get-parameter --region eu-central-1 --name /packer/ansible_windows/windows_packer.yaml --with-decryption --query Parameter.Value --output text > /home/ubuntu/ansible/inventories/group_vars/windows_packer.yaml
 
      # Validate the Packer template
      - echo "Packer Validate..."

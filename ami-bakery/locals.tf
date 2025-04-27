@@ -15,4 +15,9 @@ locals {
   codebuild_container_compute_type = "BUILD_GENERAL1_SMALL"       # 2 vCPU - 4 GiB - 64 GB storage - Ref. https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html 
 
   subnets_suffix = "default"
+
+  # SNS Notification email list
+  emails = [
+    stefano@my-amazing-mail.com,
+  ]
 }
