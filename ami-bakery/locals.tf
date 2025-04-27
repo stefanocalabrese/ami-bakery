@@ -5,7 +5,7 @@ locals {
 
   repository_url  = "https://github.com/stefanocalabrese/ami-bakery.git" # Change this if you fork the repository to customize it
   build_name      = "windows-server-2022-golden-ami-${local.year_month_date}"
-  config_dir      = "terraform/${local.project_name}/config-tools"
+  config_dir      = "./${local.project_name}/config-tools"
   date            = formatdate("YYYYMMDDHHMM", timestamp())
   year_month_date = formatdate("YYYY-MM-DD", timestamp())
   year_month      = formatdate("YYYY-MM", timestamp())
