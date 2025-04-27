@@ -8,7 +8,6 @@ locals {
   config_dir      = "./${local.project_name}/config-tools"
   date            = formatdate("YYYYMMDDHHMM", timestamp())
   year_month_date = formatdate("YYYY-MM-DD", timestamp())
-  year_month      = formatdate("YYYY-MM", timestamp())
 
   build_timeout                    = 300                          # 5 Minutes, increase it at your needs
   codebuild_container_image        = "aws/codebuild/standard:7.0" # Ubuntu 22.04 LTS runner        - Ref. https://docs.aws.amazon.com/codebuild/latest/userguide/ec2-compute-images.html 
