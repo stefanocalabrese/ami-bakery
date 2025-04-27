@@ -19,11 +19,21 @@ resource "aws_ssm_parameter" "aws_ec2_plugin_windows" {
 }
 
 resource "aws_ssm_parameter" "openssl_config" {
-  name        = "/ansible_windows/openssl.cnf"
+  name        = "/packer/ansible_windows/openssl.cnf"
   type        = "String"
   description = "Openssl Config file for Windows Certificate with Client Authentication"
   value = templatefile(
     "${path.module}/ansible/windows/configs/openssl.cnf.tpl",
+    {}
+  )
+}
+
+resource "aws_ssm_parameter" "sshd_config" {
+  name        = "/packer/ansible/sshd_config"
+  type        = "String"
+  description = "sshd_config file for the CodeBuild container"
+  value = templatefile(
+    "${path.module}/config-tools/ansible/sshd_config",
     {}
   )
 }

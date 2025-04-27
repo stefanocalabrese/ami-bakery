@@ -55,7 +55,7 @@ phases:
 
      # Downloading configuration files and playbooks from Parameter Store
      - echo "Downloading configuration files and playbooks from Parameter Store"
-     - PARAMETERS=$(aws ssm get-parameters-by-path --path "/ansible_windows/cis/" --recursive --query 'Parameters[*].{Name:Name}' --output text)
+     - PARAMETERS=$(aws ssm get-parameters-by-path --path "/packer/ansible-playbooks" --recursive --query 'Parameters[*].{Name:Name}' --output text)
      - TOTAL=$(echo "$PARAMETERS" | wc -w)
      - echo "Found $TOTAL playbooks in Parameter Store"
      - COUNT=1
@@ -65,7 +65,7 @@ phases:
        echo "[$COUNT/$TOTAL] Downloaded $PLAYBOOK_NAME";
        COUNT=$((COUNT + 1));
        done
-     - aws ssm get-parameter --region eu-central-1 --name /packer/ansible_windows/apply-sec-baseline.yaml --with-decryption --query Parameter.Value --output text > /home/ubuntu/ansible/playbooks/apply-sec-baseline.yaml
+
      - aws ssm get-parameter --region eu-central-1 --name /packer/ansible/sshd_config --with-decryption --query Parameter.Value --output text > /home/ubuntu/.ssh/config
      - aws ssm get-parameter --region eu-central-1 --name /packer/ansible_windows/ansible.cfg --with-decryption --query Parameter.Value --output text > /etc/ansible/ansible.cfg
      - aws ssm get-parameter --region eu-central-1 --name /packer/ansible_windows/aws_ec2.yaml --with-decryption --query Parameter.Value --output text > /home/ubuntu/ansible/inventories/aws_ec2.yaml

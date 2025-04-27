@@ -1,0 +1,4 @@
+Host *
+  User Ubuntu
+  IdentityFile /home/ubuntu/${SSH_KEY_NAME}.pem
+  IdentitiesOnly yes

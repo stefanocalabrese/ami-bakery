@@ -328,66 +328,6 @@ source "amazon-ebs" "codebuild" {
 build {
  sources = ["source.amazon-ebs.codebuild"]
 
-# Enabling TLS 1.2 and 1.3
- provisioner "ansible" {
-   timeout           = "20m"
-   ssh_host_key_file = "/home/ubuntu/${var.ssh_key_name}.pem"
-   use_proxy         = false
-   inventory_file    = "/home/ubuntu/ansible/inventories/aws_ec2.yaml"
-   playbook_file     = "/home/ubuntu/ansible/playbooks/enable-new-win-sec-protocols.yaml"
-   ansible_env_vars  = ["ANSIBLE_CONFIG=/etc/ansible/ansible.cfg"]
- }
-
- # Disabling SSL, TLS 1.0 and 1.1
- provisioner "ansible" {
-   timeout           = "20m"
-   ssh_host_key_file = "/home/ubuntu/${var.ssh_key_name}.pem"
-   use_proxy         = false
-   inventory_file    = "/home/ubuntu/ansible/inventories/aws_ec2.yaml"
-   playbook_file     = "/home/ubuntu/ansible/playbooks/disable-old-win-sec-protocols.yaml"
-   ansible_env_vars  = ["ANSIBLE_CONFIG=/etc/ansible/ansible.cfg"]
- }
-
- # Windows Hardening
- provisioner "ansible" {
-   timeout           = "20m"
-   ssh_host_key_file = "/home/ubuntu/${var.ssh_key_name}.pem"
-   use_proxy         = false
-   inventory_file    = "/home/ubuntu/ansible/inventories/aws_ec2.yaml"
-   playbook_file     = "/home/ubuntu/ansible/playbooks/win-hardening.yaml"
-   ansible_env_vars  = ["ANSIBLE_CONFIG=/etc/ansible/ansible.cfg"]
- }
-
- # Configure Amazon NTP
- provisioner "ansible" {
-   timeout           = "20m"
-   ssh_host_key_file = "/home/ubuntu/${var.ssh_key_name}.pem"
-   use_proxy         = false
-   inventory_file    = "/home/ubuntu/ansible/inventories/aws_ec2.yaml"
-   playbook_file     = "/home/ubuntu/ansible/playbooks/ntp.yaml"
-   ansible_env_vars  = ["ANSIBLE_CONFIG=/etc/ansible/ansible.cfg"]
- }
-
- # Show Files Extensions and Hidden Folders
- provisioner "ansible" {
-   timeout           = "20m"
-   ssh_host_key_file = "/home/ubuntu/${var.ssh_key_name}.pem"
-   use_proxy         = false
-   inventory_file    = "/home/ubuntu/ansible/inventories/aws_ec2.yaml"
-   playbook_file     = "/home/ubuntu/ansible/playbooks/show-file-ext-hidden-folders.yaml"
-   ansible_env_vars  = ["ANSIBLE_CONFIG=/etc/ansible/ansible.cfg"]
- }
-
- # Enabling Dark Theme
- provisioner "ansible" {
-   timeout           = "20m"
-   ssh_host_key_file = "/home/ubuntu/${var.ssh_key_name}.pem"
-   use_proxy         = false
-   inventory_file    = "/home/ubuntu/ansible/inventories/aws_ec2.yaml"
-   playbook_file     = "/home/ubuntu/ansible/playbooks/enable-dark-theme.yaml"
-   ansible_env_vars  = ["ANSIBLE_CONFIG=/etc/ansible/ansible.cfg"]
- }
-
  # Apply Custom Security Baseline
   provisioner "ansible" {
    timeout           = "20m"
