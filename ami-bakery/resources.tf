@@ -1,18 +1,10 @@
 resource "aws_codebuild_source_credential" "codebuild_gh_token" {
   auth_type   = "PERSONAL_ACCESS_TOKEN"
   server_type = "GITHUB"
-  token       = jsondecode(data.aws_secretsmanager_secret_version.codebuild.secret_string)["gh_token"]
+  token       = jsondecode(aws_secretsmanager_secret_version.github_token_version.secret_string)["gh_token"]
 }
 
-resource "aws_cloudwatch_log_group" "golden_ami" {
-  name              = "codebuild/${local.build_name}"
-  retention_in_days = 7
 
-  tags = {
-    environment = var.environment
-    group       = local.build_name
-  }
-}
 
 module "golden_ami" {
   source         = "../codebuild/"
@@ -22,7 +14,7 @@ module "golden_ami" {
   location       = local.repository_url
   build_role_arn = data.aws_iam_role.codebuild.arn
 
-  # kms_arn        = aws_kms_key.kms_key.arn  # Uncomment if you want to use KMS encryption, you need to create a KMS
+  # kms_arn = aws_kms_key.kms_key.arn  # Uncomment if you want to use KMS encryption, you need to create a KMS
 
   configuration_dir    = local.config_dir
   component_packer_dir = "${local.config_dir}/packer"
@@ -37,13 +29,13 @@ module "golden_ami" {
   security_groups_ids = [aws_security_group.packer_sg.id]
 
   cloudwatch_logs = {
-    group_name  = aws_cloudwatch_log_group.golden_ami_windows.id
+    group_name  = aws_cloudwatch_log_group.packer.id
     stream_name = local.build_name
   }
 
   environment_variables = {
-    BOOTSTRAP_BUCKET = "s3-bootstrap"
-    SNS_TOPIC_ARN    = "arn:aws:sns:eu-central-1:${data.aws_caller_identity.current.account_id}:email-infra-notifications"
+    BOOTSTRAP_BUCKET = aws_s3_bucket.bakery_store.id
+    SNS_TOPIC_ARN    = aws_sns_topic.notification_email_topic.arn
     DATE             = local.date
     SSH_KEY_NAME     = local.project_name
   }

@@ -29,3 +29,9 @@ variable "sns" {
     display_name = "packer-notifications"
   }
 }
+
+variable "github_token" {
+  description = "Sensitive token for Github"
+  type        = string
+  sensitive   = true
+}
