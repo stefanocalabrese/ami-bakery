@@ -98,7 +98,7 @@ resource "aws_iam_policy" "codebuild_policy" {
 
 # Attach the policy to the role
 resource "aws_iam_role_policy_attachment" "codebuild_policy_attach" {
-  role       = aws_iam_role.codebuild_role.name
+  role       = aws_iam_role.codebuild.name
   policy_arn = aws_iam_policy.codebuild_policy.arn
 }
 
@@ -125,7 +125,7 @@ resource "aws_iam_policy" "codebuild_cloudwatch_policy" {
 
 # Attach the policy to the role
 resource "aws_iam_role_policy_attachment" "codebuild_cloudwatch_attach" {
-  role       = aws_iam_role.codebuild_role.name
+  role       = aws_iam_role.codebuild.name
   policy_arn = aws_iam_policy.codebuild_cloudwatch_policy.arn
 }
 
@@ -135,7 +135,7 @@ data "aws_iam_policy" "amazon_ec2_full_access" {
 
 # Attach the policy to the role
 resource "aws_iam_role_policy_attachment" "codebuild_ec2_policy_attach" {
-  role       = aws_iam_role.codebuild_role.name
+  role       = aws_iam_role.codebuild.name
   policy_arn = data.aws_iam_policy.amazon_ec2_full_access.arn
 }
 

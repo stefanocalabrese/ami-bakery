@@ -10,7 +10,7 @@ module "ami_baker" {
   description    = "${local.build_name}-${local.year_month_date}"
   environment    = var.environment
   location       = local.repository_url
-  build_role_arn = data.aws_iam_role.codebuild.arn
+  build_role_arn = aws_iam_role.codebuild.arn
 
   configuration_dir    = local.config_dir
   component_packer_dir = "${local.config_dir}/packer"

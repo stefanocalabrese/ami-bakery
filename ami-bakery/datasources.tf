@@ -4,13 +4,9 @@ data "aws_vpc" "vpc" { # Using the default VPC for test, you are welcome to crea
   default = true       # the needed components (subnets, NAT, IGW, routes, nacl, etc)
 }
 
-data "aws_secretsmanager_secret_version" "codebuild" { # to be created in GitHub developer settings and stored in AWS Secret Manager
-  secret_id = "github_codebuild_token"                 # feel free to change the name of your secret
-}
-
 data "aws_subnets" "subnets" {
   filter {
-    name   = "Tag:Name"
-    values = ["${local.subnets_suffix}-*"]
+    name   = "vpc-id"
+    values = [data.aws_vpc.vpc.id]
   }
 }

@@ -2,9 +2,8 @@ resource "aws_ssm_parameter" "ansible_cfg_windows" {
   name        = "/packer/ansible_windows/ansible.cfg"
   type        = "String"
   description = "Ansible Config file for Windows"
-  value = templatefile(
-    "${path.module}/ansible/windows/configs/ansible_windows.cfg",
-    {}
+  value = file(
+    "${path.module}/config-tools/ansible/windows/configs/ansible.cfg",
   )
 }
 
@@ -13,7 +12,7 @@ resource "aws_ssm_parameter" "aws_ec2_plugin_windows" {
   type        = "String"
   description = "Ansible plugin for dynamic inventory on ec2 tag for Windows"
   value = templatefile(
-    "${path.module}/ansible/windows/configs/aws_ec2.yaml",
+    "${path.module}/config-tools/ansible/windows/configs/aws_ec2.yaml",
     {}
   )
 }
@@ -23,7 +22,7 @@ resource "aws_ssm_parameter" "openssl_config" {
   type        = "String"
   description = "Openssl Config file for Windows Certificate with Client Authentication"
   value = templatefile(
-    "${path.module}/ansible/windows/configs/openssl.cnf.tpl",
+    "${path.module}/config-tools/ansible/windows/configs/openssl.cnf",
     {}
   )
 }
@@ -66,28 +65,28 @@ resource "aws_ssm_parameter" "ec2launch_agent_config" {
 #  tier = "Advanced"
 # }
 
-resource "aws_s3_bucket_object" "unattend_xml" {
+resource "aws_s3_object" "unattend_xml" {
   bucket = aws_s3_bucket.bakery_store.id
   key    = "config/unattend.xml"
   source = "${path.module}/config-tools/packer/files/unattend.xml"
   etag   = filemd5("${path.module}/config-tools/packer/files/unattend.xml")
 }
 
-resource "aws_s3_bucket_object" "wallpaper" {
+resource "aws_s3_object" "wallpaper" {
   bucket = aws_s3_bucket.bakery_store.id
   key    = "config/wallpaper.jpg"
   source = "${path.module}/config-tools/packer/files/wallpaper.jpg"
   etag   = filemd5("${path.module}/config-tools/packer/files/wallpaper.jpg")
 }
 
-resource "aws_s3_bucket_object" "sec_baseline" {
+resource "aws_s3_object" "sec_baseline" {
   bucket = aws_s3_bucket.bakery_store.id
   key    = "lgpo/sec_baseline_ws2022.zip"
   source = "${path.module}/config-tools/ansible/windows/sec-baseline/sec_baseline_ws2022.zip"
   etag   = filemd5("${path.module}/config-tools/ansible/windows/sec-baseline/sec_baseline_ws2022.zip")
 }
 
-resource "aws_s3_bucket_object" "lgpo" {
+resource "aws_s3_object" "lgpo" {
   bucket = aws_s3_bucket.bakery_store.id
   key    = "lgpo/lgpo.exe"
   source = "${path.module}/config-tools/packer/files/lgpo.exe"
