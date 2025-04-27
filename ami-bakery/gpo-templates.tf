@@ -16,7 +16,6 @@ resource "aws_s3_object" "attachmentmanager_admx" {
   source = "${path.module}/config-tools/ansible/windows/sec-baseline/AttachmentManager.admx"
   etag   = filemd5("${path.module}/config-tools/ansible/windows/sec-baseline/AttachmentManager.admx")
 
-
   tags = {
     Name = "AttachmentManager.admx"
   }
