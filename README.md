@@ -15,3 +15,7 @@ Create custom AWS AMI for Windows and Linux with the following components:
 - Logs in Cloudwatch
 - SNS email notification at completion
 - Use SSH for Windows and Linux
+
+# Contacts
+
+Contact me on LinkedIn: https://www.linkedin.com/in/stefano-calabrese/
