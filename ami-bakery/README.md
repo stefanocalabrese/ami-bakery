@@ -5,6 +5,7 @@
 
 | Name | Description | Type | Default |
 |------|-------------|------|---------|
+| github_token | Sensitive token for Github | `string` | n/a |
 | aws_access_key_id | AWS Access Key ID | `string` | `""` |
 | aws_secret_access_key | AWS Secret Access Key | `string` | `""` |
 | environment | The environment where we are deploying to | `string` | `"dev"` |
@@ -15,7 +16,7 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| golden_ami | ../codebuild/ | n/a |
+| ami_baker | ../codebuild/ | n/a |
 
 ## Requirements
 

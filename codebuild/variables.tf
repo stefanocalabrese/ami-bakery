@@ -136,7 +136,7 @@ variable "location" {
   description = "URL of the repository: https://github.com/username/REPOSITORY_NAME.git"
 }
 
-variable "private_subnets_ids" {
+variable "subnets_ids" {
   type        = list(any)
   description = "List of the subnets in the 3 Availability Zones"
 }

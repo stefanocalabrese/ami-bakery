@@ -4,17 +4,13 @@ resource "aws_codebuild_source_credential" "codebuild_gh_token" {
   token       = jsondecode(aws_secretsmanager_secret_version.github_token_version.secret_string)["gh_token"]
 }
 
-
-
-module "golden_ami" {
+module "ami_baker" {
   source         = "../codebuild/"
   build_name     = local.build_name
   description    = "${local.build_name}-${local.year_month_date}"
   environment    = var.environment
   location       = local.repository_url
   build_role_arn = data.aws_iam_role.codebuild.arn
-
-  # kms_arn = aws_kms_key.kms_key.arn  # Uncomment if you want to use KMS encryption, you need to create a KMS
 
   configuration_dir    = local.config_dir
   component_packer_dir = "${local.config_dir}/packer"
@@ -25,7 +21,7 @@ module "golden_ami" {
   codebuild_container_compute_type = local.codebuild_container_compute_type
 
   vpc_id              = data.aws_vpc.vpc.id
-  private_subnets_ids = data.aws_subnets.subnets.ids
+  subnets_ids         = data.aws_subnets.subnets.ids
   security_groups_ids = [aws_security_group.packer_sg.id]
 
   cloudwatch_logs = {
@@ -39,4 +35,6 @@ module "golden_ami" {
     DATE             = local.date
     SSH_KEY_NAME     = local.project_name
   }
+
+  # kms_arn = aws_kms_key.kms_key.arn  # Uncomment if you want to use KMS encryption, you need to create a KMS
 }
